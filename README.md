@@ -1,4 +1,0 @@
-udpbalancer
-===========
-
-UDP Load Balancer

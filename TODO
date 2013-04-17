@@ -1,0 +1,10 @@
+1. Add flood protection
+
+eg.
+
+a) iptables -A INPUT -d 10.1.1.2 -p udp --destination-port 12345 -m limit --limit 1000/second --limit-burst 1500 -j ACCEPT
+
+b) use rate-limit / traffic-shape in your router
+
+
+

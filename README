@@ -1,0 +1,72 @@
+What is udpbalancer?
+--------------------
+
+Udpbalancer acts as a reverse proxy, sitting between clients
+and UDP servers. Udpbalancer proxies requests to your servers.
+
+Prerequisites:
+--------------
+
+* optional/recommended: DJB's daemontools (http://cr.yp.to/daemontools.html)
+
+Platform:
+---------
+
+Udpbalancer is developed and tested on Linux (can be compiled on FreeBSD too).
+
+Install:
+--------
+
+Edit config.h then type "make". It should compile cleanly.
+
+
+Usage:
+------
+
+-l <listen address>, -p <port> : obvious
+
+-m <method> : method can be either roundrobin, volumebalance or loadbalance
+
+-x <host1:bogo1,host2:bogo2,..,hostN:bogoN> : hosts definition
+
+-v : verbosity level (you may define it multiple times)
+
+
+list all of your hosts where host1, host2, ... is the IP address of your hosts
+optionally you may set their bogomips values. The higher bogomips value means
+that hosts will get more requests then a host with lower bogomips value.
+
+You should always start with hosts having a lower bogomips value (if you choose
+roundrobin method it does not matter).
+
+Eg: -x 10.1.1.1:2,10.1.1.2:10 -m volumebalance
+
+In this setup 10.1.1.1 will get every 2 requests of 10 and 10.1.1.2 will have the rest.
+
+If you set the method to loadbalance it will acts just like with volumebalance but in
+additionally the response time of the hosts is also considered (see BONUS in config.h).
+
+Security:
+---------
+
+Udpbalancer does not have to run as root unless you bind to a privileged port (<1024).
+In this case udpbalancer drops root privs after it bound to its listener port.
+
+Flood protection:
+-----------------
+
+Udpbalancer works with an iterative model (= one request at a time). If udpbalancer is
+flooded and your servers cannot respond quickly you may see as the Recv-Q variable grows
+in your netstat output. So you should take some measures to prevent this situation, see
+TODO (1).
+
+
+High availability:
+------------------
+
+I recommend you to use DJB's daemontools to supervise udpbalancer.
+
+#!/bin/sh
+exec 2>&1
+exec /path/to/udpbalancer -lxpmv [switches]
+
